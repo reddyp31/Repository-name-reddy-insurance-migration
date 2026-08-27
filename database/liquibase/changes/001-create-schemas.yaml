@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-schemas
+      author: reddy
+      changes:
+        - sql:
+            sql: |
+              CREATE SCHEMA IF NOT EXISTS legacy;
+              CREATE SCHEMA IF NOT EXISTS pmt_in;
+              CREATE SCHEMA IF NOT EXISTS pmt_out;
