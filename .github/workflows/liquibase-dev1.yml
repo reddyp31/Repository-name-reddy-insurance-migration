@@ -1,0 +1,46 @@
+name: Liquibase DEV1 Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'database/liquibase/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: REDDY_INSURANCE_DEV1
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d REDDY_INSURANCE_DEV1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Liquibase
+        uses: liquibase/setup-liquibase@v3
+        with:
+          version: '5.0.4'
+          edition: 'community'
+
+      - name: Install PostgreSQL driver
+        run: liquibase lpm add postgresql --global --skip-existing
+
+      - name: Deploy database
+        working-directory: database/liquibase
+        env:
+          LIQUIBASE_COMMAND_PASSWORD: postgres
+        run: liquibase update
