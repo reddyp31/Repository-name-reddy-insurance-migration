@@ -1,0 +1,6 @@
+.env
+*.log
+*.tmp
+*.password
+secrets/
+local-config/
